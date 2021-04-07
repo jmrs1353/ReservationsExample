@@ -1,0 +1,242 @@
+<html lang="en"> 
+<head> 
+<meta charset="utf-8"> 
+<meta name="viewport"
+		content="width=device-width, 
+				initial-scale=1, 
+				shrink-to-fit=no"> 
+
+	<title>Reservations</title>
+
+
+	<script src="js/jquery-3.5.1.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/dataTables.select.min.js"></script>
+	<script src="js/dataTables.bootstrap4.min.js"></script>
+	<script src="js/dataTables.buttons.min.js"></script>
+	<script src="js/buttons.flash.min.js"></script>
+	<script src="js/jszip.min.js"></script>
+	<script src="js/pdfmake.min.js"></script>
+	<script src="js/vfs_fonts.js"></script>
+	<script src="js/buttons.html5.min.js"></script>
+	<script src="js/buttons.print.min.js"></script>
+	<script src="js/buttons.bootstrap4.min.js"></script>
+	<script src="js/buttons.colVis.min.js"></script>
+	<script src="js/excel-bootstrap-table-filter-bundle.js"></script>
+	<link rel="stylesheet" href="css/excel-bootstrap-table-filter-style.css" />
+	<link rel="stylesheet" href="js/excel-bootstrap-table-filter-style.css"/>
+	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="css/bootstrap.css"/>
+	<link rel="stylesheet" href="css/select.dataTables.min.css"/>
+	<link rel="stylesheet" href="css/jquery.dataTables.min.css"/>
+	<link rel="stylesheet" href="css/buttons.dataTables.min.css"/>
+	<link rel="stylesheet" href="css/buttons.bootstrap4.min.css"/>
+	
+<style>
+.botones2{ 
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.botones1{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#thead{
+font: small-caps bold 10px/9px Helvetica, serif;
+}
+
+#tbody{
+font-size: 9px;
+font-family: Helvetica;
+}
+
+#tabla_info{
+font-size: 9px; 
+font-family: Helvetica;
+font: bold;
+}
+
+#tabla_paginate{
+font-size: 9px; 
+}
+   .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: 1s all;
+        opacity: 0;
+    }
+    .loading.show {
+        opacity: 1;
+    }
+    .loading .spin {
+        border: 3px solid hsla(185, 100%, 62%, 0.2);
+        border-top-color: #3cefff;
+        border-radius: 50%;
+        width: 3em;
+        height: 3em;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }    
+
+.btnq22{
+background: url(img/formato-de-archivo-csv.png);
+}
+
+body {
+	margin: 0;
+  font-size: 12px;
+}
+.browser {
+	width: 300px;
+	height: 200px;
+	border: 1px solid gray;
+  float: left;
+  margin: 20px;
+}
+.browser.selected {
+	border-color: blue;
+}
+/* customization */
+.browser-widget li.file,
+.browser-widget li.directory {
+    width: 60px;
+}
+</style>
+
+
+	
+</head>
+<body>
+	<hr>
+
+<div class="container">
+<h4 style="text-align:center"><p style="text-align:center;font-family:helvetica;">Reservations</p></h4>
+
+
+<div class="row">
+  <div class="col-6">
+   <ul  id= "lista" class="nav flex-column">
+	
+    </ul>
+  </div>
+  <div id="lista2" class="col-6">
+
+	</ul>
+  </div>
+</div>
+</div>
+
+</div>
+
+
+
+
+<div id="tabla2" class="container"  style="color: blue"> 
+ 
+<hr>
+<table id="tabla" class="stripe table-sm" style="display: none ">		
+	<thead id="thead"> 	
+		<tr> 		
+		
+             <th>&nbsp&nbsp</th>
+			<th><a style="color: blue">Id</a><a style="color: blue"></a></th>
+			<th><a style="color: blue">Name</a><a style="color: blue"></a></th> 
+			<th><a style="color: blue">Time</a><a style="color: blue"></a></th> 			
+		</tr> 
+	</thead>	
+	<tbody id="tbody">
+	</tbody>
+</table> 
+	
+	
+
+
+</div> 
+
+
+ <div id="loader" class="loading show" style="display:none">
+        <div class="spin"></div>
+</div> 
+
+
+<script type="text/javascript">
+
+ window.onload = inicio;
+ 
+function inicio () { 
+	 //  $("#cont1").show();	
+	   	
+
+	//	lee_json();
+	llamaservicio();
+	
+    }
+	
+	
+	function llamaservicio (search){
+	 $("#loader").show();
+		  
+	  var baseurl =  "http://localhost:8080/reservations/1";   
+	  var xmlhttp1 =new XMLHttpRequest();
+	  xmlhttp1.open("GET", baseurl); 
+	  //xmlhttp1.withCredentials = true
+	  xmlhttp1.send();
+	  xmlhttp1.onreadystatechange = function () {
+			if (xmlhttp1.readyState === 4 && xmlhttp1.status === 200) {
+				var mydat = JSON.parse(xmlhttp1.responseText);
+				
+			
+				populateDataTable(mydat, table);
+		
+						
+            
+			};	 
+			
+		}
+	  
+	}
+	
+	
+	
+	
+  
+//table functions
+			  function populateDataTable (data, table) {
+				console.log("populating data tabla...");
+
+				var length = Object.keys(data).length;
+				for(var i = 1; i < length; i++) {
+				  var CDCSurvey = data[i];
+
+				  // You could also use an ajax property on the data table initialization
+				  $('#tabla').dataTable().fnAddData( [
+				    '',
+					CDCSurvey.id,
+					CDCSurvey.name,
+					CDCSurvey.time,
+
+				  ]);
+				}
+		     
+			  }
+  
+
+</script>
+</body>
+</html>

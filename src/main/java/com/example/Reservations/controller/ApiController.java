@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Reservations.model.Reservation;
 import com.example.Reservations.repository.ReservationsRepository;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/")
 public class ApiController  {
