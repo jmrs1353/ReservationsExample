@@ -192,10 +192,112 @@ function inicio () {
 	function llamaservicio (search){
 	 $("#loader").show();
 		  
-	  var baseurl =  "http://localhost:8080/reservations/1";   
+	 	var buttonCommon = {
+					 exportOptions: {
+						modifier: {
+								page: 'all'
+								},
+									 format: {
+										header: function ( data, columnIdx ) {
+										    if(columnIdx==0){
+											return ' ';
+											}
+											if(columnIdx==1){
+											return 'Question';
+											}
+											if(columnIdx==2){
+											return 'Survey';
+											}
+											if(columnIdx==3){
+											return 'Timing';
+											}
+											if(columnIdx==4){
+											return 'Variable';
+											}
+											if(columnIdx==5){
+											return 'Year';
+											}
+											
+										}
+									}
+        }
+					};
+               var table = $('#tabla').DataTable( {
+						"autoWidth": false,
+					    "dom": "<'row'<'col'l><'col botones1'f><'col'>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+						//lengthChange: false,
+					    colReorder: false,
+						rowReorder: false,
+						//"ordering": true,
+						pagingType: 'first_last_numbers',
+						buttons: [ 
+							 { extend: 'excel',
+							  exportOptions: {
+						       modifier: {
+								page: 'all'
+								},
+									 format: {
+										header: function ( data, columnIdx ) {
+										    if(columnIdx==0){
+											return ' ';
+											}
+											if(columnIdx==1){
+											return 'Question';
+											}
+											if(columnIdx==2){
+											return 'Survey';
+											}
+											if(columnIdx==3){
+											return 'Timing';
+											}
+											if(columnIdx==4){
+											return 'Variable';
+											}
+											if(columnIdx==5){
+											return 'Year';
+											}
+											
+										}
+									}
+        }
+							},
+							$.extend( true, {}, buttonCommon, {
+								extend: 'csvHtml5'
+							} ),
+							$.extend( true, {}, buttonCommon, {
+								extend: 'pdfHtml5'
+							} )
+						], 
+						columnDefs: [ {
+						orderable: false,
+						className: 'select-checkbox',
+						targets:   0
+					} ],
+						select: {
+							style:    'multi',
+							selector: 'td:not(:last-child)'
+						}
+					} ).clear();
+				
+				table
+				.buttons()
+				.container()
+				.appendTo( '#botones2');
+				
+				 new $.fn.dataTable.Buttons( table, {
+						buttons: ['selectAll','selectNone']
+					} );
+								
+				 table.buttons(1, null).container().appendTo('#botones1');
+	  var baseurl =  "http://localhost:8080/reservations";   
 	  var xmlhttp1 =new XMLHttpRequest();
 	  xmlhttp1.open("GET", baseurl); 
 	  //xmlhttp1.withCredentials = true
+	  xmlhttp1.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, X-Requested-With, Cache-Control");
+	  xmlhttp1.setRequestHeader("Content-Type", "application/json");
+	  xmlhttp1.setRequestHeader("Access-Control-Allow-Origin", '*');
+	  xmlhttp1.setRequestHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+	  xmlhttp1.setRequestHeader("Access-Control-Allow-Credentials", "true");
 	  xmlhttp1.send();
 	  xmlhttp1.onreadystatechange = function () {
 			if (xmlhttp1.readyState === 4 && xmlhttp1.status === 200) {
@@ -204,7 +306,12 @@ function inicio () {
 			
 				populateDataTable(mydat, table);
 		
-						
+						$("#tabla").show();
+						$("#tabla2").show();        
+                        $("#loader").hide();						
+		                $("#cont1").hide();	
+						$("#cont2").hide();
+            
             
 			};	 
 			
@@ -218,25 +325,26 @@ function inicio () {
   
 //table functions
 			  function populateDataTable (data, table) {
+			  var datos;
 				console.log("populating data tabla...");
 
 				var length = Object.keys(data).length;
-				for(var i = 1; i < length; i++) {
-				  var CDCSurvey = data[i];
+				for(var i = 0; i < length; i++) {
+				 datos = data[i];
 
 				  // You could also use an ajax property on the data table initialization
 				  $('#tabla').dataTable().fnAddData( [
 				    '',
-					CDCSurvey.id,
-					CDCSurvey.name,
-					CDCSurvey.time,
+					datos.id,
+					datos.name,
+					datos.time,
 
 				  ]);
 				}
 		     
 			  }
   
-
+         
 </script>
 </body>
 </html>
